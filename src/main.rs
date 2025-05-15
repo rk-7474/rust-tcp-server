@@ -5,12 +5,22 @@ mod handler;
 use crate::request::Request;
 
 use std::{
-    env, fs, io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}, path::Path
+    io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}
 };
 
-
 fn main() {
-    let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
+
+    let args = std::env::args().collect::<Vec<_>>();
+
+    let mut port = 7474;
+
+    if args.len() > 0 && args[1].parse::<u16>().is_ok() {
+        port = args[1].parse::<u16>().unwrap();
+    }
+
+    let addr = format!("127.0.0.1:{}", port); 
+
+    let listener = TcpListener::bind(addr).unwrap();
 
     for stream in listener.incoming() {
         let stream = stream.unwrap();
@@ -22,8 +32,6 @@ fn main() {
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
     let request_line = buf_reader.lines().next().unwrap().unwrap();
-
-    println!("Request type: {}", request_line);
 
     let response = Request::new(request_line).parse();
     
