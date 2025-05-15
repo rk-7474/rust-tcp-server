@@ -1,3 +1,4 @@
+use log::{info, error, debug};
 
 pub struct Response {
     content: String,
@@ -13,6 +14,8 @@ impl Response {
     pub fn to_string(&self) -> String {
         let status_line = format!("HTTP/1.1 {} {}", self.status.code, self.status.message); 
         let length = self.content.len(); 
+
+        debug!("Response: {}", status_line);
 
         format!("{}\r\nContent-Length: {}\r\n\r\n{}", status_line, length, self.content)
     }

@@ -1,6 +1,8 @@
 
 use crate::response::Response;
 
+use log::{info, error, debug};
+
 use std::{
     fs, path::Path
 };
@@ -11,6 +13,8 @@ pub fn handle_get_request(request_line: &str) -> Response {
     if path.ends_with("/") {
         path.push_str("index.html");
     }
+
+    debug!("Looking for file: {}", path);
 
     if Path::new(&path).is_file() {
         Response::new(fs::read_to_string(path).unwrap(), 200, "OK".to_string())
