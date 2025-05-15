@@ -8,6 +8,8 @@ use std::{
     io::{prelude::*, BufReader}, net::{TcpListener, TcpStream}
 };
 
+use log::{info, error, debug};
+
 fn main() {
 
     let args = std::env::args().collect::<Vec<_>>();
@@ -22,6 +24,8 @@ fn main() {
 
     let listener = TcpListener::bind(addr).unwrap();
 
+    info!("Listening on port: {}", port);
+
     for stream in listener.incoming() {
         let stream = stream.unwrap();
 
@@ -32,6 +36,8 @@ fn main() {
 fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
     let request_line = buf_reader.lines().next().unwrap().unwrap();
+
+    debug!("Request: {}", request_line);
 
     let response = Request::new(request_line).parse();
     
